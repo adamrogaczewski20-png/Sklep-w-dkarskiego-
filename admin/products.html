@@ -2,27 +2,55 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Produkty | Panel administratora</title>
 </head>
 
 <body>
 
     <main>
-        <h1>Produkty</h1>
 
-        <nav aria-label="Kategorie">
-            <a href="#">Przynęty</a>
-            <a href="#">Gumy</a>
-            <a href="#">Kopyta</a>
+        <h1>Panel administratora</h1>
+
+        <nav aria-label="Panel administratora">
+            <a href="#">Produkty</a>
+            <a href="#">Kategorie</a>
+            <a href="#">Zamówienia</a>
         </nav>
 
+        <hr>
+
         <section>
+
+            <h2>Produkty</h2>
+
+            <button
+                type="button"
+                id="addProductButton"
+            >
+                + Dodaj produkt
+            </button>
+
+        </section>
+
+
+        <section
+            id="productFormSection"
+            hidden
+        >
+
             <h2>Nowy produkt</h2>
 
             <form id="productForm">
 
-                <label for="name">Nazwa produktu</label>
+                <label for="name">
+                    Nazwa produktu
+                </label>
+
                 <input
                     type="text"
                     id="name"
@@ -30,21 +58,33 @@
                     required
                 >
 
-                <label for="description">Opis</label>
+
+                <label for="description">
+                    Opis
+                </label>
+
                 <textarea
                     id="description"
                     name="description"
                     rows="5"
                 ></textarea>
 
-                <label for="sku">SKU</label>
+
+                <label for="sku">
+                    SKU
+                </label>
+
                 <input
                     type="text"
                     id="sku"
                     name="sku"
                 >
 
-                <label for="price">Cena</label>
+
+                <label for="price">
+                    Cena
+                </label>
+
                 <input
                     type="number"
                     id="price"
@@ -54,20 +94,66 @@
                     required
                 >
 
-                <label for="category">Kategoria</label>
-                <select id="category" name="category_id" required>
-                    <option value="">Wybierz kategorię</option>
+
+                <label for="category">
+                    Kategoria
+                </label>
+
+                <select
+                    id="category"
+                    name="category_id"
+                    required
+                >
+                    <option value="">
+                        Wybierz kategorię
+                    </option>
                 </select>
 
+
+                <label for="quantity">
+                    Ilość w magazynie
+                </label>
+
+                <input
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    min="0"
+                    step="1"
+                    value="0"
+                >
+
+
                 <button type="submit">
-                    Dodaj produkt
+                    Zapisz produkt
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelButton"
+                >
+                    Anuluj
                 </button>
 
             </form>
 
             <p id="message"></p>
+
         </section>
+
+
+        <section>
+
+            <h2>Lista produktów</h2>
+
+            <div id="productsList">
+                Ładowanie produktów...
+            </div>
+
+        </section>
+
     </main>
+
 
     <script src="products.js"></script>
 
