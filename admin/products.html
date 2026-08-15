@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produkty | Panel administratora</title>
 </head>
+
 <body>
 
     <main>
@@ -68,44 +69,7 @@
         </section>
     </main>
 
-    <script>
-        const API_URL = "http://localhost:3000";
-
-        async function loadCategories() {
-            const response = await fetch(`${API_URL}/api/categories`);
-
-            if (!response.ok) {
-                throw new Error("Nie udało się pobrać kategorii.");
-            }
-
-            const categories = await response.json();
-            const select = document.getElementById("category");
-
-            categories.forEach(category => {
-                const option = document.createElement("option");
-
-                option.value = category.id;
-                option.textContent = category.name;
-
-                select.appendChild(option);
-            });
-        }
-
-        document
-            .getElementById("productForm")
-            .addEventListener("submit", event => {
-                event.preventDefault();
-
-                document.getElementById("message").textContent =
-                    "Formularz produktu jest gotowy. API dodawania produktu zrobimy w następnym kroku.";
-            });
-
-        loadCategories().catch(error => {
-            console.error(error);
-            document.getElementById("message").textContent =
-                "Nie udało się załadować kategorii.";
-        });
-    </script>
+    <script src="products.js"></script>
 
 </body>
 </html>
