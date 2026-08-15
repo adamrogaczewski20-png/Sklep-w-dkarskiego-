@@ -1,10 +1,11 @@
 const express = require("express");
 const pool = require("../db");
 const { hashPassword, verifyPassword } = require("./password");
+const { createToken } = require("./token");
 
 const router = express.Router();
 
-// Rejestracja klienta
+// REJESTRACJA
 router.post("/api/auth/register", async (req, res) => {
     try {
         const {
@@ -65,9 +66,13 @@ router.post("/api/auth/register", async (req, res) => {
             ]
         );
 
+        const user = result.rows[0];
+        const token = createToken(user);
+
         res.status(201).json({
             message: "Konto zostało utworzone.",
-            user: result.rows[0]
+            token,
+            user
         });
 
     } catch (error) {
@@ -79,10 +84,13 @@ router.post("/api/auth/register", async (req, res) => {
     }
 });
 
-// Logowanie klienta
+// LOGOWANIE
 router.post("/api/auth/login", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const {
+            email,
+            password
+        } = req.body;
 
         if (!email || !password) {
             return res.status(400).json({
@@ -125,8 +133,11 @@ router.post("/api/auth/login", async (req, res) => {
             });
         }
 
+        const token = createToken(user);
+
         res.json({
             message: "Logowanie udane.",
+            token,
             user: {
                 id: user.id,
                 email: user.email,
