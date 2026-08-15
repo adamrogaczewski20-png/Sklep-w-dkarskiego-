@@ -185,4 +185,85 @@ router.post("/api/admin/products", async (req, res) => {
 });
 
 
+// ==============================
+// EDYCJA PRODUKTU
+// ==============================
+
+router.put("/api/admin/products/:id", async (req, res) => {
+    const client = await pool.connect();
+
+    try {
+        const { id } = req.params;
+
+        const {
+            name,
+            description,
+            sku,
+            price,
+            category_id,
+            quantity
+        } = req.body;
+
+        if (
+            !name ||
+            price === undefined ||
+            !category_id
+        ) {
+            return res.status(400).json({
+                error:
+                    "Nazwa, cena i kategoria są wymagane."
+            });
+        }
+
+        if (Number(price) < 0) {
+            return res.status(400).json({
+                error:
+                    "Cena nie może być ujemna."
+            });
+    await client.query(
+            `
+            INSERT INTO inventory (
+                product_id,
+                quantity
+            )
+            VALUES ($1, $2)
+            ON CONFLICT (product_id)
+            DO UPDATE SET
+                quantity = EXCLUDED.quantity,
+                updated_at = NOW()
+            `,
+            [
+                id,
+                quantity || 0
+            ]
+        );
+
+        await client.query("COMMIT");
+
+        res.json({
+            message:
+                "Produkt został zaktualizowany.",
+            product:
+                productResult.rows[0]
+        });
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+
+        console.error(
+            "Błąd edycji produktu:",
+            error
+        );
+
+        res.status(500).json({
+            error:
+                "Nie udało się zaktualizować produktu."
+        });
+
+    } finally {
+        client.release();
+    }
+});
+
+
 module.exports = router;
