@@ -81,12 +81,14 @@ async function loadProducts() {
             `${API_URL}/api/admin/products`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization:
+                        `Bearer ${token}`
                 }
             }
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         if (!response.ok) {
             throw new Error(
@@ -130,9 +132,37 @@ async function loadProducts() {
                     Magazyn:
                     ${product.quantity ?? 0}
                 </p>
+
+                <button
+                    type="button"
+                    data-product-id="${product.id}"
+                    class="edit-product-button"
+                >
+                    Edytuj
+                </button>
             `;
 
             productsList.appendChild(item);
+        });
+
+        const editButtons =
+            document.querySelectorAll(
+                ".edit-product-button"
+            );
+
+        editButtons.forEach((button) => {
+            button.addEventListener(
+                "click",
+                () => {
+                    const productId =
+                        button.dataset.productId;
+
+                    startEditingProduct(
+                        productId,
+                        data
+                    );
+                }
+            );
         });
 
     } catch (error) {
@@ -142,7 +172,47 @@ async function loadProducts() {
             error.message;
     }
 }
+// ==============================
+// ROZPOCZĘCIE EDYCJI PRODUKTU
+// ==============================
 
+function startEditingProduct(productId, products) {
+    const product = products.find(
+        (item) => String(item.id) === String(productId)
+    );
+
+    if (!product) {
+        message.textContent =
+            "Nie znaleziono produktu.";
+
+        return;
+    }
+
+    document.getElementById("name").value =
+        product.name || "";
+
+    document.getElementById("price").value =
+        product.price || "";
+
+    document.getElementById("sku").value =
+        product.sku || "";
+
+    document.getElementById("description").value =
+        product.description || "";
+
+    document.getElementById("quantity").value =
+        product.quantity ?? 0;
+
+    categorySelect.value =
+        product.category_id || "";
+
+    productFormSection.style.display =
+        "block";
+    productFrom.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
 
 // ==============================
 // DODAWANIE PRODUKTU
@@ -152,6 +222,9 @@ productForm.addEventListener(
     "submit",
     async (event) => {
         event.preventDefault();
+
+        const editingId =
+            productForm.dataset.editingId;
 
         const product = {
             name:
@@ -186,11 +259,19 @@ productForm.addEventListener(
                     .value
         };
 
+        const url = editingId
+            ? `${API_URL}/api/admin/products/${editingId}`
+            : `${API_URL}/api/admin/products`;
+
+        const method = editingId
+            ? "PUT"
+            : "POST";
+
         try {
             const response = await fetch(
-                `${API_URL}/api/admin/products`,
+                url,
                 {
-                    method: "POST",
+                    method,
 
                     headers: {
                         "Content-Type":
@@ -211,17 +292,22 @@ productForm.addEventListener(
             if (!response.ok) {
                 throw new Error(
                     data.error ||
-                    "Nie udało się dodać produktu."
+                    "Nie udało się zapisać produktu."
                 );
-            }
-
             message.textContent =
-                "Produkt został dodany.";
+                editingId
+                    ? "Produkt został zaktualizowany."
+                    : "Produkt został dodany.";
 
             productForm.reset();
 
+            delete productForm.dataset.editingId;
+
+            productFormSection.hidden = true;
+
             await loadProducts();
-} catch (error) {
+
+        } catch (error) {
             console.error(error);
 
             message.textContent =
