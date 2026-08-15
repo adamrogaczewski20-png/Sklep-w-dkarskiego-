@@ -25,6 +25,7 @@ async function loadCategories() {
 
             categorySelect.appendChild(option);
         });
+
     } catch (error) {
         console.error(error);
 
@@ -33,7 +34,7 @@ async function loadCategories() {
     }
 }
 
-productForm.addEventListener("submit", event => {
+productForm.addEventListener("submit", async event => {
     event.preventDefault();
 
     const product = {
@@ -44,10 +45,46 @@ productForm.addEventListener("submit", event => {
         category_id: Number(categorySelect.value)
     };
 
-    console.log("Produkt do zapisania:", product);
+    if (!product.name || !product.price || !product.category_id) {
+        message.textContent =
+            "Wypełnij nazwę, cenę i kategorię.";
 
-    message.textContent =
-        "Dane produktu zostały przygotowane. Dodawanie do bazy podłączymy w następnym kroku.";
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `${API_URL}/api/admin/products`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(product)
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.error || "Nie udało się dodać produktu."
+            );
+        }
+
+        message.textContent =
+            `Produkt "${data.product.name}" został dodany.`;
+
+        productForm.reset();
+
+        await loadCategories();
+
+    } catch (error) {
+        console.error(error);
+
+        message.textContent =
+            error.message;
+    }
 });
 
 loadCategories();
