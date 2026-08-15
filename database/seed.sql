@@ -62,3 +62,24 @@ INSERT INTO inventory (product_id, quantity)
 SELECT id, 20
 FROM products
 WHERE sku IN ('KOP-10-001', 'KOP-12-001');
+-- Testowe metody dostawy
+INSERT INTO shipping_methods (name, price, is_active)
+VALUES
+    ('Paczkomat', 12.99, TRUE),
+    ('Kurier', 16.99, TRUE),
+    ('Odbiór osobisty', 0.00, TRUE);
+-- Testowy kod rabatowy
+INSERT INTO discount_codes (
+    code,
+    discount_percent,
+    usage_limit,
+    expires_at,
+    is_active
+)
+VALUES (
+    'START10',
+    10.00,
+    100,
+    NOW() + INTERVAL '30 days',
+    TRUE
+);
