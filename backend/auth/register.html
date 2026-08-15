@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rejestracja | Sklep wędkarski</title>
+</head>
+
+<body>
+
+    <main>
+        <h1>Utwórz konto</h1>
+
+        <form id="registerForm">
+
+            <label for="firstName">Imię</label>
+            <input
+                type="text"
+                id="firstName"
+                required
+            >
+
+            <label for="lastName">Nazwisko</label>
+            <input
+                type="text"
+                id="lastName"
+                required
+            >
+
+            <label for="email">E-mail</label>
+            <input
+                type="email"
+                id="email"
+                required
+            >
+
+            <label for="password">Hasło</label>
+            <input
+                type="password"
+                id="password"
+                minlength="8"
+                required
+            >
+
+            <button type="submit">
+                Załóż konto
+            </button>
+
+        </form>
+
+        <p id="message"></p>
+    </main>
+
+    <script src="register.js"></script>
+
+</body>
+</html>
