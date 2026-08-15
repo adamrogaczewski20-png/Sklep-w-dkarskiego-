@@ -58,3 +58,7 @@ SELECT
     5.99
 FROM categories
 WHERE slug = 'kopyta';
+INSERT INTO inventory (product_id, quantity)
+SELECT id, 20
+FROM products
+WHERE sku IN ('KOP-10-001', 'KOP-12-001');
