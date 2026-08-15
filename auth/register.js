@@ -40,8 +40,15 @@ registerForm.addEventListener("submit", async (event) => {
             );
         }
 
+        localStorage.setItem("token", data.token);
+
+        localStorage.setItem(
+            "user",
+            JSON.stringify(data.user)
+        );
+
         message.textContent =
-            "Konto zostało utworzone. Możesz się zalogować.";
+            "Konto zostało utworzone.";
 
         registerForm.reset();
 
