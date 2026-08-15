@@ -6,6 +6,7 @@ const routes = require("./routes");
 const productRoutes = require("./productRoutes");
 const categoryRoutes = require("./categoryRoutes");
 const productAdminRoutes = require("./productAdminRoutes");
+const authRoutes = require("./auth/authRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,7 @@ app.use(routes);
 app.use(productRoutes);
 app.use(categoryRoutes);
 app.use(productAdminRoutes);
+app.use(authRoutes);
 
 app.get("/api/health", (req, res) => {
     res.json({
