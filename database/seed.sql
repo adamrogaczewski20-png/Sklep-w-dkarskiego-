@@ -22,3 +22,39 @@ INSERT INTO categories (parent_id, name, slug, description, sort_order)
 SELECT id, 'Twistery', 'twistery', 'Gumowe przynęty typu twister.', 2
 FROM categories
 WHERE slug = 'gumy';
+-- Produkty testowe: Kopyta
+INSERT INTO products (
+    category_id,
+    name,
+    slug,
+    description,
+    sku,
+    price
+)
+SELECT
+    id,
+    'Kopyto 10 cm',
+    'kopyto-10-cm',
+    'Gumowa przynęta typu kopyto o długości 10 cm.',
+    'KOP-10-001',
+    4.99
+FROM categories
+WHERE slug = 'kopyta';
+
+INSERT INTO products (
+    category_id,
+    name,
+    slug,
+    description,
+    sku,
+    price
+)
+SELECT
+    id,
+    'Kopyto 12 cm',
+    'kopyto-12-cm',
+    'Gumowa przynęta typu kopyto o długości 12 cm.',
+    'KOP-12-001',
+    5.99
+FROM categories
+WHERE slug = 'kopyta';
