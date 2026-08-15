@@ -1,66 +1,23 @@
 const API_URL = "http://localhost:3000";
 
+const token = localStorage.getItem("token");
+
 const productForm = document.getElementById("productForm");
-const categorySelect = document.getElementById("category");
 const message = document.getElementById("message");
+const productsList = document.getElementById("productsList");
 
-async function loadCategories() {
-    try {
-        const response = await fetch(`${API_URL}/api/categories`);
-
-        if (!response.ok) {
-            throw new Error("Nie udało się pobrać kategorii.");
-        }
-
-        const categories = await response.json();
-
-        categorySelect.innerHTML =
-            '<option value="">Wybierz kategorię</option>';
-
-        categories.forEach(category => {
-            const option = document.createElement("option");
-
-            option.value = category.id;
-            option.textContent = category.name;
-
-            categorySelect.appendChild(option);
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        message.textContent =
-            "Nie udało się załadować kategorii.";
-    }
+if (!token) {
+    window.location.href = "../auth/login.html";
 }
 
-productForm.addEventListener("submit", async event => {
-    event.preventDefault();
-
-    const product = {
-        name: document.getElementById("name").value.trim(),
-        description: document.getElementById("description").value.trim(),
-        sku: document.getElementById("sku").value.trim(),
-        price: Number(document.getElementById("price").value),
-        category_id: Number(categorySelect.value)
-    };
-
-    if (!product.name || !product.price || !product.category_id) {
-        message.textContent =
-            "Wypełnij nazwę, cenę i kategorię.";
-
-        return;
-    }
-
+async function loadProducts() {
     try {
         const response = await fetch(
             `${API_URL}/api/admin/products`,
             {
-                method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(product)
+                    Authorization: `Bearer ${token}`
+                }
             }
         );
 
@@ -68,23 +25,96 @@ productForm.addEventListener("submit", async event => {
 
         if (!response.ok) {
             throw new Error(
-                data.error || "Nie udało się dodać produktu."
+                data.error || "Nie udało się pobrać produktów."
             );
         }
 
-        message.textContent =
-            `Produkt "${data.product.name}" został dodany.`;
+        if (data.length === 0) {
+            productsList.textContent = "Brak produktów.";
+            return;
+        }
 
-        productForm.reset();
+        productsList.innerHTML = "";
 
-        await loadCategories();
+        data.forEach((product) => {
+            const item = document.createElement("div");
+
+            item.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>Kategoria: ${product.category_name}</p>
+                <p>Cena: ${product.price} zł</p>
+                <p>SKU: ${product.sku || "-"}</p>
+                <p>Magazyn: ${product.quantity ?? 0}</p>
+            `;
+
+            productsList.appendChild(item);
+        });
 
     } catch (error) {
         console.error(error);
 
-        message.textContent =
+        productsList.textContent =
             error.message;
     }
-});
+}
 
-loadCategories();
+productForm.addEventListener(
+    "submit",
+    async (event) => {
+        event.preventDefault();
+
+        const product = {
+            name: document.getElementById("name").value.trim(),
+            category_id:
+                document.getElementById("category").value,
+            price:
+                document.getElementById("price").value,
+            sku:
+                document.getElementById("sku").value.trim(),
+            description:
+                document.getElementById("description").value.trim(),
+            quantity:
+                document.getElementById("quantity").value
+        };
+
+        try {
+            const response = await fetch(
+                `${API_URL}/api/admin/products`,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+
+                    body: JSON.stringify(product)
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    "Nie udało się dodać produktu."
+                );
+            }
+
+            message.textContent =
+                "Produkt został dodany.";
+
+            productForm.reset();
+
+            await loadProducts();
+
+        } catch (error) {
+            console.error(error);
+
+            message.textContent =
+                error.message;
+        }
+    }
+);
+
+loadProducts();
